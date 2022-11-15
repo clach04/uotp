@@ -1,3 +1,5 @@
 *.xpi
+*.zip
+*.png
 
 .web-extension-id

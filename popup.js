@@ -223,7 +223,7 @@ class Entry
 		let otp_elt = document.createElement('div')
 		otp_elt.className = 'otp'
 		otp_elt.addEventListener('click', () => {
-			navigator.clipboard.writeText(this.signature)
+			navigator.clipboard.writeText(otp_elt.textContent)
 		})
 		new_elt.appendChild(otp_elt)
 
