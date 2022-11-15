@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="stylesheet" href="popup.css"/>
+	</head>
+	<body>
+		<div id="password-container">
+			<form id="password-form">
+				<label for="master-password">Password</label>
+				<div class="password-container">
+					<input type="password" id="master-password" />
+					<img id="master-visibility" class="icon visibility" src="/icons/visibility.svg" />
+				</div>
+				<button>Open</button>
+			</form>
+		</div>
+		<div class="entry add hidden" id="entry-add-container">
+			<img id="logout" class="icon" src="/icons/logout.svg">
+			<form id="entry-form">
+				<div>
+					<label for="entry-name">Name</label>
+					<input type="text" id="entry-name" required />
+				</div>
+				<div>
+					<label for="entry-secret">Secret</label>
+					<div class="password-container">
+						<input type="password" id="entry-secret" required />
+						<img id="entry-visibility" class="icon visibility" src="/icons/visibility.svg" />
+					</div>
+					<button><img class="icon" src="/icons/add.svg"></button>
+				</div>
+			</form>
+		</div>
+		<div id="entry-list"></div>
+		<script src="/popup.js"></script>
+	</body>
+</html>

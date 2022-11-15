@@ -1,0 +1,24 @@
+{
+	"author": "Corentin Risselin",
+	"browser_action": {
+		"default_icon": "icons/uotp.svg",
+		"default_title": "uOTP",
+		"default_popup": "/popup.html"
+	},
+	"background": {
+		"scripts": ["background.js"]
+	},
+	"content_security_policy": "default-src 'self'",
+	"description": "A simple OTP manager that doesn't require your data.",
+	"homepage_url": "https://gitlab.com/corentin-pro/uotp",
+	"icons": {
+		"96": "icons/uotp.svg"
+	 },
+	"manifest_version": 2,
+	"name": "uOTP",
+	"permissions": [
+		"storage",
+		"clipboardWrite"
+	],
+	"version": "1.0"
+}

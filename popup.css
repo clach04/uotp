@@ -1,0 +1,153 @@
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg-color: hsl(213, 10%, 17%);
+		--light-bg-color: hsl(213, 10%, 23%);
+		--highlight-bg-color: hsl(213, 10%, 28%);
+		--fg-color: #ccc;
+		--border-color: #888;
+		--img-filter: ;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--bg-color: #eee;
+		--light-bg-color: #ddd;
+		--highlight-bg-color: #ccc;
+		--fg-color: #666;
+		--border-color: #888;
+		--img-filter: invert(1);
+	}
+}
+
+body {
+	background-color: var(--bg-color);
+	color: var(--fg-color);
+	max-height: 600px;
+	margin: 0;
+}
+
+input {
+	background-color: var(--bg-color);
+	color: var(--fg-color);
+	border: 1px solid var(--border-color);
+	margin: 4px;
+	border-radius: 5px;
+}
+
+button {
+	background-color: var(--light-bg-color);
+	color: var(--fg-color);
+	border: 1px solid var(--border-color);
+	margin: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	border-radius: 5px;
+}
+
+h2 {
+	font-size: 1.2em;
+	margin: 0 0 8px 0;
+}
+
+.entry {
+	font-size: 1.2em;
+	padding: 1em;
+}
+
+.entry .header {
+	display: flex;
+}
+
+.entry .header h2, .entry .header input {
+	flex-grow: 1;
+}
+
+.entry .action {
+	margin-left: 8px;
+}
+
+.entry .action img {
+	filter: var(--img-filter);
+	height: 1em;
+	cursor: pointer;
+}
+
+.entry .otp {
+	background-color: var(--light-bg-color);
+	padding: 4px 8px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.entry .otp:hover {
+	background-color: var(--highlight-bg-color);
+}
+
+#entry-list .entry {
+	border-top: 1px solid var(--border-color);
+}
+
+.hidden {
+	display: none;
+}
+
+.icon {
+	filter: var(--img-filter);
+	height: 1em;
+}
+
+.password-container {
+	display: flex;
+	align-items: center;
+	position: relative;
+}
+
+.password-container input {
+	flex-grow: 1;
+}
+
+.visibility {
+	position: absolute;
+	right: 10px;
+}
+
+#entry-add-container {
+	position: relative;
+}
+
+#entry-form {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+#entry-form > div {
+	display: flex;
+}
+
+#entry-form label {
+	flex-grow: 1;
+	margin-right: 4px;
+}
+
+#logout {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	cursor: pointer;
+}
+
+#password-container {
+	padding: 1em;
+}
+
+#password-form {
+	display: flex;
+	align-items: center;
+}
+
+#password-form label {
+	margin-right: 8px;
+}
