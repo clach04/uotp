@@ -209,10 +209,12 @@ class Entry
 		action_elt.className = "action"
 		let edit_elt = document.createElement('img')
 		edit_elt.src = "/icons/edit.svg"
+		edit_elt.title = 'Edit'
 		edit_elt.addEventListener('click', () => {this.openEdit()})
 		action_elt.appendChild(edit_elt)
 		let delete_elt = document.createElement('img')
 		delete_elt.src = "/icons/delete.svg"
+		delete_elt.title = 'Delete'
 		delete_elt.addEventListener('click', () => {store.removeEntry(this)})
 		action_elt.appendChild(delete_elt)
 		header_elt.appendChild(action_elt)
@@ -310,9 +312,11 @@ class Entry
 
 		let done_elt = document.createElement('img')
 		done_elt.src = "/icons/done.svg"
+		done_elt = 'Save'
 		this.elements.action.appendChild(done_elt)
 		let close_elt = document.createElement('img')
 		close_elt.src = "/icons/close.svg"
+		close_elt.title = 'Cancel'
 		this.elements.action.appendChild(close_elt)
 
 		done_elt.addEventListener('click', () => {
