@@ -1,10 +1,11 @@
-const body_elt = document.getElementsByTagName('body')[0]
 const password_container_elt = document.querySelector('#password-container')
 const password_form_elt = document.querySelector('#password-form')
 const master_password_elt = document.querySelector('#master-password')
 const master_visibility_elt = document.querySelector('#master-visibility')
 const entry_add_container_elt = document.querySelector('#entry-add-container')
 const logout_elt = document.querySelector('#logout')
+const store_action_elt = document.querySelector('#store-action')
+const export_elt = document.querySelector('#export')
 const entry_form_elt = document.querySelector('#entry-form')
 const entry_name_elt = document.querySelector('#entry-name')
 const entry_secret_elt = document.querySelector('#entry-secret')
@@ -135,11 +136,11 @@ class Store
 		if(this.key === null)
 			throw `Cannot save store without key`
 		let encoder = new TextEncoder();
-		const entries = this.entries.map(entry => {return {name: entry.name, secret: entry.secret}})
 		const encrypted = await window.crypto.subtle.encrypt(
 			{name: 'AES-GCM', iv: this.iv},
 			this.key,
-			encoder.encode(JSON.stringify(entries)))
+			encoder.encode(JSON.stringify(
+				this.entries.map(entry => {return {name: entry.name, secret: entry.secret}}))))
 		await browser.storage.local.set({
 			iv: b32encode(this.iv),
 			salt: b32encode(this.salt),
@@ -168,6 +169,18 @@ class Store
 		this.entries.forEach(entry => { entry.remove() })
 		this.entries = []
 		this.key = null
+	}
+
+	export()
+	{
+		let export_elt = document.createElement('a')
+		export_elt.setAttribute('href', 'data:application/json,' + JSON.stringify(
+			this.entries.map(entry => {return {name: entry.name, secret: entry.secret}})))
+		export_elt.setAttribute('download', 'uotp_export.json')
+		export_elt.style.display = 'none'
+		document.body.appendChild(export_elt)
+		export_elt.click()
+		document.body.removeChild(export_elt)
 	}
 }
 
@@ -304,6 +317,7 @@ class Entry
 
 		done_elt.addEventListener('click', () => {
 			this.name = name_input_elt.value
+			this.elements.title.textContent = this.name
 			this.secret = secret_input_elt.value
 			this.regenerateKey().then(() => { this.refresh(Math.floor(Date.now() / 30000)) })
 			store.save()
@@ -340,6 +354,7 @@ async function addEntry(event)
 function start()
 {
 	password_container_elt.classList.add('hidden')
+	store_action_elt.classList.remove('hidden')
 	entry_add_container_elt.classList.remove('hidden')
 	const now = Date.now()
 	if(refresh_timeout !== null)
@@ -353,6 +368,7 @@ function start()
 
 function stop()
 {
+	store_action_elt.classList.add('hidden')
 	entry_add_container_elt.classList.add('hidden')
 	password_container_elt.classList.remove('hidden')
 	if(refresh_timeout !== null)
@@ -376,6 +392,7 @@ async function init()
 		background_port.postMessage({command: 'logout', password: master_password_elt.value})
 		stop()
 	})
+	export_elt.addEventListener('click', () => { store.export() })
 
 	background_port.postMessage({command: 'init'})
 	background_port.onMessage.addListener((state) => {

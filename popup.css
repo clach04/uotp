@@ -60,7 +60,8 @@ h2 {
 	display: flex;
 }
 
-.entry .header h2, .entry .header input {
+.entry .header h2,
+.entry .header input {
 	flex-grow: 1;
 }
 
@@ -89,8 +90,13 @@ h2 {
 	border-top: 1px solid var(--border-color);
 }
 
+#entry-list .entry input {
+	font-size: 1.2em;
+	width: 200px;
+}
+
 .hidden {
-	display: none;
+	display: none !important;
 }
 
 .icon {
@@ -115,6 +121,7 @@ h2 {
 
 #entry-add-container {
 	position: relative;
+	padding-bottom: 4px;
 }
 
 #entry-form {
@@ -150,4 +157,14 @@ h2 {
 
 #password-form label {
 	margin-right: 8px;
+}
+
+#store-action {
+	display: flex;
+	justify-content: center;
+}
+
+#store-action img {
+	height: 2em;
+	cursor: pointer;
 }

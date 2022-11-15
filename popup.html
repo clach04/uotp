@@ -10,14 +10,14 @@
 			<form id="password-form">
 				<label for="master-password">Password</label>
 				<div class="password-container">
-					<input type="password" id="master-password" />
+					<input type="password" id="master-password" autofocus />
 					<img id="master-visibility" class="icon visibility" src="/icons/visibility.svg" />
 				</div>
 				<button>Open</button>
 			</form>
 		</div>
 		<div class="entry add hidden" id="entry-add-container">
-			<img id="logout" class="icon" src="/icons/logout.svg">
+			<img id="logout" class="icon" src="/icons/logout.svg" title="Logout">
 			<form id="entry-form">
 				<div>
 					<label for="entry-name">Name</label>
@@ -33,7 +33,11 @@
 				</div>
 			</form>
 		</div>
-		<div id="entry-list"></div>
+		<div id="entry-list">
+			<div id="store-action" class="hidden">
+				<img id="export" src="/icons/export.svg" title="Export" />
+			</div>
+		</div>
 		<script src="/popup.js"></script>
 	</body>
 </html>
