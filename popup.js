@@ -151,16 +151,20 @@ class Store
 	refresh()
 	{
 		const now = Date.now()
+		const count_time = now / 30000
+		const counter = Math.floor(count_time)
+		const animation_delay = (count_time - counter) * 30
+
 		if(refresh_timeout !== null)
 			clearTimeout(refresh_timeout)
 		refresh_timeout = setTimeout(
 			() => { store.refresh() },
-			((Math.floor(now / 30000) + 1) * 30000) - now + 1)
+			((counter + 1) * 30000) - now + 1)
 
-		const counter = Math.floor(now / 30000)
 		for(const entry of this.entries)
 		{
 			entry.refresh(counter)
+			entry.refreshTimer(animation_delay)
 		}
 	}
 
@@ -193,6 +197,7 @@ class Entry
 		this.name = name
 		this.secret = secret
 		this.key = key
+		this.timer_count = 0
 
 		let new_elt = document.createElement('div')
 		new_elt.className = 'entry'
@@ -222,18 +227,32 @@ class Entry
 		new_elt.appendChild(header_elt)
 
 		// Entry OTP
+		let otp_container_elt = document.createElement('div')
+		otp_container_elt.className = 'otp-container'
 		let otp_elt = document.createElement('div')
 		otp_elt.className = 'otp'
 		otp_elt.addEventListener('click', () => {
 			navigator.clipboard.writeText(otp_elt.textContent)
 		})
-		new_elt.appendChild(otp_elt)
+		otp_container_elt.appendChild(otp_elt)
+		// let svg_timer_elt = document.createElement('svg')
+		const svgNS = 'http://www.w3.org/2000/svg'
+		let svg_timer_elt = document.createElementNS(svgNS, 'svg')
+		svg_timer_elt.setAttributeNS(null, 'viewBox', '0 0 2 2')
+		let timer_circle_elt = document.createElementNS(svgNS, 'circle')
+		timer_circle_elt.setAttributeNS(null, 'r', '1')
+		timer_circle_elt.setAttributeNS(null, 'cx', '1')
+		timer_circle_elt.setAttributeNS(null, 'cy', '1')
+		svg_timer_elt.appendChild(timer_circle_elt)
+		otp_container_elt.appendChild(svg_timer_elt)
+		new_elt.appendChild(otp_container_elt)
 
 		this.elements = {
 			main: new_elt,
 			header: header_elt,
 			title: title_elt,
 			otp: otp_elt,
+			timer_circle: timer_circle_elt,
 			action: action_elt,
 			edit: edit_elt,
 			delete: delete_elt
@@ -246,7 +265,10 @@ class Entry
 		const key = await window.crypto.subtle.importKey(
 			'raw', new Uint8Array(b32decode(secret)), {name: 'HMAC', hash: 'SHA-1'}, false, ['sign'])
 		const new_entry = new Entry(name, secret, key)
-		await new_entry.refresh(Math.floor(Date.now() / 30000))
+		const count_time = Date.now() / 30000
+		const counter = Math.floor(count_time)
+		await new_entry.refresh(counter)
+		new_entry.refreshTimer((count_time - counter) * 30)
 		return new_entry
 	}
 
@@ -274,6 +296,13 @@ class Entry
 		// 6 digits from its Uint32 representation
 		this.elements.otp.textContent = new DataView(
 			signature.slice(offset, offset + 4).buffer).getUint32().toString().slice(-6)
+	}
+
+	refreshTimer(animation_delay)
+	{
+		this.timer_count = 1- this.timer_count
+		this.elements.timer_circle.style.animationDelay = `-${animation_delay}s`
+		this.elements.timer_circle.style.animationName = `timer${this.timer_count}`
 	}
 
 	insert()
@@ -323,7 +352,12 @@ class Entry
 			this.name = name_input_elt.value
 			this.elements.title.textContent = this.name
 			this.secret = secret_input_elt.value
-			this.regenerateKey().then(() => { this.refresh(Math.floor(Date.now() / 30000)) })
+			this.regenerateKey().then(() => {
+				const count_time = Date.now() / 30000
+				const counter = Math.floor(count_time)
+				this.refresh(counter)
+				this.refreshTimer((count_time - counter) * 30)
+			})
 			store.save()
 			this.elements.main.removeChild(secret_container_elt)
 			this.elements.action.removeChild(done_elt)

@@ -77,15 +77,38 @@ h2 {
 	cursor: pointer;
 }
 
+.entry .otp-container {
+	display: flex;
+	align-items: center;
+}
+
 .entry .otp {
 	background-color: var(--light-bg-color);
 	padding: 4px 8px;
 	border-radius: 5px;
 	cursor: pointer;
+	flex-grow: 1;
+	margin-right: 8px;
 }
 
 .entry .otp:hover {
 	background-color: var(--highlight-bg-color);
+}
+
+.entry svg {
+	width: 1.5em;
+	height: 1.5em;
+	transform: rotateY(-180deg) rotateZ(-90deg);
+	border-radius: 50%;
+}
+
+.entry svg circle {
+	stroke-dasharray: 6.28318px;
+	stroke-dashoffset: 0;
+	stroke-width: 100%;
+	stroke: var(--border-color);
+	fill: none;
+	animation: timer1 30s linear 1 forwards;
 }
 
 #entry-list .entry {
@@ -170,3 +193,21 @@ h2 {
 	height: 2em;
 	cursor: pointer;
 }
+
+@keyframes timer0 {
+	from {
+		stroke-dashoffset: 0;
+	}
+	to {
+		stroke-dashoffset: 6.28318px;
+	}
+ }
+
+ @keyframes timer1 {
+	from {
+		stroke-dashoffset: 0;
+	}
+	to {
+		stroke-dashoffset: 6.28318px;
+	}
+ }
