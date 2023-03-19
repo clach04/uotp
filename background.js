@@ -130,6 +130,7 @@ async function restore(storage)
 	}
 	catch(_error)
 	{
+		state.key = null
 		show_error('Cannot decrypt entries: wrong password')
 	}
 }

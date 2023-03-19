@@ -201,6 +201,7 @@ h2 {
 
 #notification img {
 	height: 1em;
+	cursor: pointer;
 }
 
 #password-container {
