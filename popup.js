@@ -424,7 +424,8 @@ class Entry
 		done_elt.addEventListener('click', () => {
 			this.name = name_input_elt.value
 			this.elements.title.textContent = this.name
-			this.secret = secret_input_elt.value
+			// Remove any white spaces (can happen for readability)
+			this.secret = secret_input_elt.value.replace(/\s/g, '')
 			this.regenerateKey().then(() => {
 				const count_time = Date.now() / 30000
 				const counter = Math.floor(count_time)
@@ -460,7 +461,8 @@ class Entry
 async function addEntry(event)
 {
 	event.preventDefault()
-	await store.addEntry(entry_name_elt.value, entry_secret_elt.value)
+	// Remove any white spaces (can happen for readability)
+	await store.addEntry(entry_name_elt.value, entry_secret_elt.value.replace(/\s/g, ''))
 }
 
 function start()

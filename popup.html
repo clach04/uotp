@@ -14,7 +14,7 @@
 			<form id="password-form">
 				<label for="master-password">Password</label>
 				<div class="password-container">
-					<input type="password" id="master-password" autofocus />
+					<input type="password" id="master-password" autofocus autocomplete="off" />
 					<img id="master-visibility" class="icon visibility" src="/icons/visibility.svg" />
 				</div>
 				<button>Open</button>
@@ -25,12 +25,12 @@
 			<form id="entry-form">
 				<div>
 					<label for="entry-name">Name</label>
-					<input type="text" id="entry-name" required />
+					<input type="text" id="entry-name" autocomplete="off" required />
 				</div>
 				<div>
 					<label for="entry-secret">Secret</label>
 					<div class="password-container">
-						<input type="password" id="entry-secret" required />
+						<input type="password" id="entry-secret" autocomplete="off" required />
 						<img id="entry-visibility" class="icon visibility" src="/icons/visibility.svg" />
 					</div>
 					<button><img class="icon" src="/icons/add.svg" title="Add"></button>
