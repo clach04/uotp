@@ -8,6 +8,17 @@ let state = {
 
 let popup_port = null // communication channel with popup
 
+function send_state(state)
+{
+	popup_port.postMessage({type: 'state', data: state})
+}
+
+function show_error(error)
+{
+	console.error(error)
+	popup_port.postMessage({type: 'notification', data: error})
+}
+
 function b32decode(text)
 {
 	const up_text = text.toUpperCase()
@@ -19,11 +30,13 @@ function b32decode(text)
 		const char = up_text[index]
 		if(char === '=')
 			break
-		let value = char.charCodeAt() - 65
-		if(value < 0)
-			value += 41
-		if(value < 0 || value > 31)
-			throw `Incorrect Base32 char '${text[index]}' at index ${index}`
+			let value = char.charCodeAt()
+			if(value >= 65 && value <= 90) // char in [A- Z]
+				value -= 65
+			else if(value >= 50 && value <= 55) // char in [2-7]
+				value -= 24
+			else
+				throw `Incorrect Base32 char '${text[index]}' at index ${index}`
 
 		if(lshift > 0) // next value is needed to complete the octet
 		{
@@ -50,8 +63,16 @@ async function setKey(password)
 	const storage = await browser.storage.local.get()
 	if(storage.entries !== undefined && storage.iv !== undefined && storage.salt !== undefined)
 	{
-		state.iv = new Uint8Array(b32decode(storage.iv))
-		state.salt = new Uint8Array(b32decode(storage.salt))
+		try
+		{
+			state.iv = new Uint8Array(b32decode(storage.iv))
+			state.salt = new Uint8Array(b32decode(storage.salt))
+		}
+		catch(error)
+		{
+			show_error(error)
+			return
+		}
 	}
 
 	let encoder = new TextEncoder();
@@ -76,12 +97,23 @@ async function setKey(password)
 	if(storage.entries !== undefined)
 		restore(storage)
 	else
-		popup_port.postMessage(state)
+		send_state(state)
 }
 
 // Decrypt entries saved in local storage
 async function restore(storage)
 {
+	let decoded_secret = null
+	try
+	{
+		decoded_secret = new Uint8Array(b32decode(storage.entries))
+	}
+	catch(error)
+	{
+		show_error(error)
+		return
+	}
+
 	try
 	{
 		let decrypted = await window.crypto.subtle.decrypt(
@@ -89,17 +121,16 @@ async function restore(storage)
 				name: "AES-GCM",
 				iv: state.iv
 			},
-			state.key,
-			new Uint8Array(b32decode(storage.entries))
+			state.key, decoded_secret
 		);
 
 		let decoder = new TextDecoder();
 		state.entries = JSON.parse(decoder.decode(decrypted))
-		popup_port.postMessage(state)
+		send_state(state)
 	}
-	catch (error)
+	catch(_error)
 	{
-		console.error('Cannot decrypt entries: wrong password')
+		show_error('Cannot decrypt entries: wrong password')
 	}
 }
 
@@ -109,11 +140,9 @@ function connected(port) {
 	  	if(message.command === 'init')
 		{
 			if(state.key === null)
-				popup_port.postMessage(state)
+				send_state(state)
 			else
-				browser.storage.local.get().then((storage) => {
-					restore(storage)
-				})
+				browser.storage.local.get().then((storage) => { restore(storage) })
 		}
 		else if(message.command === 'key')
 			setKey(message.password)
@@ -123,8 +152,8 @@ function connected(port) {
 			state.entries = []
 		}
 		else
-			console.error(`Wrong message: ${message}`)
+			show_error(`Wrong message: ${message}`)
 	})
- }
+}
 
- browser.runtime.onConnect.addListener(connected);
+browser.runtime.onConnect.addListener(connected);

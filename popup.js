@@ -11,8 +11,16 @@ const entry_name_elt = document.querySelector('#entry-name')
 const entry_secret_elt = document.querySelector('#entry-secret')
 const entry_visibility_elt = document.querySelector('#entry-visibility')
 const entry_list_elt = document.querySelector('#entry-list')
+const notification_elt = document.querySelector('#notification')
+const notification_text_elt = document.querySelector('#notification-text')
 
 const b32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
+const notification_delay = 5000
+const notification_repeat = 500
+
+let notifications = []
+let notification_timeout = null
+let refresh_timeout = null
 
 function togglePassword(elt)
 {
@@ -66,10 +74,12 @@ function b32decode(text)
 		const char = up_text[index]
 		if(char === '=')
 			break
-		let value = char.charCodeAt() - 65
-		if(value < 0)
-			value += 41
-		if(value < 0 || value > 31)
+		let value = char.charCodeAt()
+		if(value >= 65 && value <= 90) // char in [A- Z]
+			value -= 65
+		else if(value >= 50 && value <= 55) // char in [2-7]
+			value -= 24
+		else
 			throw `Incorrect Base32 char '${text[index]}' at index ${index}`
 
 		if(lshift > 0) // next value is needed to complete the octet
@@ -91,7 +101,42 @@ function b32decode(text)
 	return result
 }
 
-let refresh_timeout = null
+function show_notification(text)
+{
+	notifications.push(text)
+	_notification()
+}
+
+function show_error(error)
+{
+	console.error(error)
+	show_notification(error)
+}
+
+function close_notification()
+{
+	clearTimeout(notification_timeout)
+	_next_notification()
+}
+
+function _next_notification()
+{
+	notification_timeout = null
+	notification_elt.classList.remove('show')
+	notifications.shift()
+	if(notifications.length !== 0)
+		setTimeout(_notification, notification_repeat)
+}
+
+function _notification()
+{
+	if(notifications.length !== 0 && notification_timeout === null)
+	{
+		notification_text_elt.innerHTML = notifications[0]
+		notification_elt.classList.add('show')
+		notification_timeout = setTimeout(_next_notification, notification_delay)
+	}
+}
 
 class Store
 {
@@ -118,6 +163,8 @@ class Store
 	async addEntry(name, secret, save=true)
 	{
 		const entry = await Entry.create(name, secret)
+		if(entry === null)
+			return
 		entry.insert()
 		this.entries.push(entry)
 		if(save)
@@ -134,7 +181,10 @@ class Store
 	async save()
 	{
 		if(this.key === null)
-			throw `Cannot save store without key`
+		{
+			show_error(`Cannot save store without key`)
+			return
+		}
 		let encoder = new TextEncoder();
 		const encrypted = await window.crypto.subtle.encrypt(
 			{name: 'AES-GCM', iv: this.iv},
@@ -252,6 +302,7 @@ class Entry
 			header: header_elt,
 			title: title_elt,
 			otp: otp_elt,
+			svg_timer_elt: svg_timer_elt,
 			timer_circle: timer_circle_elt,
 			action: action_elt,
 			edit: edit_elt,
@@ -262,8 +313,18 @@ class Entry
 	// static function to construct Entry while being async
 	static async create(name, secret)
 	{
+		let decoded_secret = ''
+		try
+		{
+			decoded_secret = new Uint8Array(b32decode(secret))
+		}
+		catch(error)
+		{
+			show_error(error)
+			return null
+		}
 		const key = await window.crypto.subtle.importKey(
-			'raw', new Uint8Array(b32decode(secret)), {name: 'HMAC', hash: 'SHA-1'}, false, ['sign'])
+			'raw', decoded_secret, {name: 'HMAC', hash: 'SHA-1'}, false, ['sign'])
 		const new_entry = new Entry(name, secret, key)
 		const count_time = Date.now() / 30000
 		const counter = Math.floor(count_time)
@@ -274,8 +335,19 @@ class Entry
 
 	async regenerateKey()
 	{
+		let decoded_secret = ''
+		try
+		{
+			decoded_secret = new Uint8Array(b32decode(this.secret))
+		}
+		catch(error)
+		{
+			show_error(error)
+			return
+		}
+
 		this.key = await window.crypto.subtle.importKey(
-			'raw', new Uint8Array(b32decode(this.secret)), {name: 'HMAC', hash: 'SHA-1'}, false, ['sign'])
+			'raw', decoded_secret, {name: 'HMAC', hash: 'SHA-1'}, false, ['sign'])
 	}
 
 	async refresh(counter)
@@ -321,6 +393,7 @@ class Entry
 		this.elements.otp.classList.add('hidden')
 		this.elements.edit.classList.add('hidden')
 		this.elements.delete.classList.add('hidden')
+		this.elements.svg_timer_elt.classList.add('hidden')
 
 		let name_input_elt = document.createElement('input')
 		name_input_elt.value = this.name
@@ -341,7 +414,7 @@ class Entry
 
 		let done_elt = document.createElement('img')
 		done_elt.src = "/icons/done.svg"
-		done_elt = 'Save'
+		done_elt.title = 'Save'
 		this.elements.action.appendChild(done_elt)
 		let close_elt = document.createElement('img')
 		close_elt.src = "/icons/close.svg"
@@ -380,6 +453,7 @@ class Entry
 		this.elements.otp.classList.remove('hidden')
 		this.elements.edit.classList.remove('hidden')
 		this.elements.delete.classList.remove('hidden')
+		this.elements.svg_timer_elt.classList.remove('hidden')
 	}
 }
 
@@ -396,12 +470,8 @@ function start()
 	entry_add_container_elt.classList.remove('hidden')
 	const now = Date.now()
 	if(refresh_timeout !== null)
-			clearTimeout(refresh_timeout)
-	refresh_timeout = setTimeout(
-		() => {
-			store.refresh()
-		},
-		((Math.floor(now / 30000) + 1) * 30000) - now + 1)
+		clearTimeout(refresh_timeout)
+	refresh_timeout = setTimeout(() => { store.refresh() }, ((Math.floor(now / 30000) + 1) * 30000) - now + 1)
 }
 
 function stop()
@@ -410,7 +480,7 @@ function stop()
 	entry_add_container_elt.classList.add('hidden')
 	password_container_elt.classList.remove('hidden')
 	if(refresh_timeout !== null)
-			clearTimeout(refresh_timeout)
+		clearTimeout(refresh_timeout)
 	store.close()
 }
 
@@ -431,12 +501,22 @@ async function init()
 		stop()
 	})
 	export_elt.addEventListener('click', () => { store.export() })
+	document.querySelector('#notification img').addEventListener('click', close_notification)
 
 	background_port.postMessage({command: 'init'})
-	background_port.onMessage.addListener((state) => {
-		if(state.key !== null)
-			store.loadState(state).then(() => start())
+	background_port.onMessage.addListener((message) => {
+		if(message.type === 'state')
+		{
+			if(message.data.key !== null)
+				store.loadState(message.data).then(start)
+		}
+		else if(message.type === 'notification')
+			show_notification(message.data)
+		else
+			show_error(`unexpected background message with type ${message.type}`)
 	})
 }
 
-init().catch(error => console.error(error))
+init().catch(error => {
+	show_error(error)
+})
