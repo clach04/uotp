@@ -132,7 +132,7 @@ function _notification()
 {
 	if(notifications.length !== 0 && notification_timeout === null)
 	{
-		notification_text_elt.innerHTML = notifications[0]
+		notification_text_elt.firstChild.data = notifications[0]
 		notification_elt.classList.add('show')
 		notification_timeout = setTimeout(_next_notification, notification_delay)
 	}
