@@ -7,7 +7,7 @@
 	</head>
 	<body>
 		<div id="notification">
-			<span id="notification-text"> </span>
+			<pre id="notification-text"> </pre>
 			<img src="/icons/close.svg"/>
 		</div>
 		<div id="password-container">
@@ -38,8 +38,13 @@
 			</form>
 		</div>
 		<div id="entry-list">
-			<div id="store-action" class="hidden">
-				<img id="export" src="/icons/export.svg" title="Export" />
+			<div id="action">
+				<div id="store-action" class="hidden">
+					<img id="export" src="/icons/export.svg" title="Export" />
+				</div>
+				<div id="import-action" class="hidden">
+					<img id="import" src="/icons/import.svg" title="Import" />
+				</div>
 			</div>
 		</div>
 		<script src="/popup.js"></script>

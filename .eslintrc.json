@@ -1,0 +1,28 @@
+{
+	"env": {
+		"webextensions": true,
+		"browser": true,
+		"es2021": true
+	},
+	"extends": [
+		"eslint:recommended"
+	],
+	"globals": {
+		"process": "readonly"
+	},
+	"ignorePatterns": ["node_modules"],
+	"parserOptions": {
+		"ecmaVersion": "latest",
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"sourceType": "module"
+	},
+	"plugins": ["@stylistic/js"],
+	"rules": {
+		"no-console": ["error", {"allow": ["warn", "error"]}],
+		"no-unused-vars": ["error", {"argsIgnorePattern": "^_"}],
+		"@stylistic/js/indent": ["error", "tab"],
+		"@stylistic/js/semi": ["error", "always"]
+	}
+}

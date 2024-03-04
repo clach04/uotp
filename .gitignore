@@ -3,3 +3,5 @@
 *.png
 
 .web-extension-id
+
+node_modules

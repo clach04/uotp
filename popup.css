@@ -152,6 +152,21 @@ h2 {
 	right: 10px;
 }
 
+#action {
+	display: flex;
+	justify-content: center;
+}
+
+#action > div {
+	display: flex;
+	justify-content: center;
+}
+
+#action img {
+	height: 2em;
+	cursor: pointer;
+}
+
 #entry-add-container {
 	position: relative;
 	padding-bottom: 4px;
@@ -189,7 +204,6 @@ h2 {
 	flex-direction: row;
 	justify-content: space-between;
 	background-color: var(--error-bg-color);
-	font-size: 1.2em;
 	padding: 4px;
 	transform: translateY(-100%);
 	transition: transform 0.3s;
@@ -204,6 +218,10 @@ h2 {
 	cursor: pointer;
 }
 
+#notification-text {
+	white-space: pre-wrap;
+}
+
 #password-container {
 	padding: 1em;
 }
@@ -215,16 +233,6 @@ h2 {
 
 #password-form label {
 	margin-right: 8px;
-}
-
-#store-action {
-	display: flex;
-	justify-content: center;
-}
-
-#store-action img {
-	height: 2em;
-	cursor: pointer;
 }
 
 @keyframes timer0 {
