@@ -422,7 +422,7 @@ class Entry
 
 	refreshTimer(animation_delay)
 	{
-		this.timer_count = 1- this.timer_count;
+		this.timer_count = 1 - this.timer_count;
 		this.elements.timer_circle.style.animationDelay = `-${animation_delay}s`;
 		this.elements.timer_circle.style.animationName = `timer${this.timer_count}`;
 	}
@@ -469,7 +469,7 @@ class Entry
 				this.refresh(counter);
 				this.refreshTimer((count_time - counter) * 30);
 			});
-			this.save();
+			this.store.save();
 			this.elements.main.removeChild(secret_container_elt);
 			this.elements.action.removeChild(done_elt);
 			this.elements.action.removeChild(close_elt);

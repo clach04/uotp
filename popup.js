@@ -61,9 +61,7 @@ async function init()
 		stop();
 	});
 	export_elt.addEventListener('click', () => { store.export(); });
-	import_elt.addEventListener('click', () => {
-		browser.tabs.create({ url: "options.html" });
-	});
+	import_elt.addEventListener('click', () => { browser.tabs.create({ url: "options.html" }); });
 	document.querySelector('#notification img').addEventListener(
 		'click', notification.close_notification.bind(notification));
 
