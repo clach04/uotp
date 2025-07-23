@@ -1,3 +1,12 @@
+if (typeof browser === "undefined") {
+var browser = chrome;
+}
+/*
+2025-07-23 Edge has warnings, suspect Chrome will error?
+manifest.json:17:    "manifest_version": 2,
+Manifest version 2 is deprecated, and support will be removed in 2025. See https://developer.chrome.com/docs/extensions/develop/migrate/mv2-deprecation-timeline for details.
+*/
+
 // state saved to restore data every time the popu is opened
 let state = {
 	iv: window.crypto.getRandomValues(new Uint8Array(12)),
@@ -157,4 +166,4 @@ function connected(port) {
 	});
 }
 
-browser.runtime.onConnect.addListener(connected);
+browser.runtime.onConnect.addListener(connected);  // Microsoft Edge (and presumbaly Google Chrome), error:  ReferenceError: browser is not defined
