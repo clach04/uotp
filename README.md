@@ -2,6 +2,14 @@
 
 Simple and secure One Time Password extensions.
 
+## Installing
+
+Prebuilt for Mozilla Firefox available from
+https://addons.mozilla.org/en-US/firefox/addon/uotp/
+
+For installing from source code and debugging see
+https://github.com/clach04/export-tabs-urls-phoenix#dev-notes
+
 ## Highlights
 
 uOTP is meant to be:
